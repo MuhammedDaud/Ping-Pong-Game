@@ -1,7 +1,3 @@
-Here's an **in-depth README.md** for your **Ping Pong Game** project. This version offers all the necessary details and makes it well-suited for **GitHub** documentation.
-
----
-
 # 🎾 **Advanced Ping Pong Game**
 
 This **Ping Pong game** is built using Python and the `pygame` library. It features smooth paddle movements, accurate ball collision physics, score tracking, and a game-over screen. The game provides a **two-player experience** with intuitive controls and immersive gameplay, making it fun and challenging!
