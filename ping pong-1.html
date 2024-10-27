@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ping Pong Game</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    canvas {
+      background-color: #000;
+      display: block;
+      border: 2px solid #fff;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="pong" width="800" height="400"></canvas>
+
+  <script>
+    const canvas = document.getElementById("pong");
+    const context = canvas.getContext("2d");
+
+    // Create the ball
+    const ball = {
+      x: canvas.width / 2,
+      y: canvas.height / 2,
+      radius: 10,
+      speed: 5,
+      velocityX: 5,
+      velocityY: 5,
+      color: "#fff"
+    };
+
+    // Create paddles
+    const paddleWidth = 10, paddleHeight = 100;
+    const user = { x: 0, y: canvas.height / 2 - paddleHeight / 2, width: paddleWidth, height: paddleHeight, color: "#fff", score: 0 };
+    const computer = { x: canvas.width - paddleWidth, y: canvas.height / 2 - paddleHeight / 2, width: paddleWidth, height: paddleHeight, color: "#fff", score: 0 };
+
+    // Draw rectangle (paddle or background)
+    function drawRect(x, y, w, h, color) {
+      context.fillStyle = color;
+      context.fillRect(x, y, w, h);
+    }
+
+    // Draw the ball
+    function drawBall(x, y, radius, color) {
+      context.fillStyle = color;
+      context.beginPath();
+      context.arc(x, y, radius, 0, Math.PI * 2, false);
+      context.closePath();
+      context.fill();
+    }
+
+    // Reset the ball to the center
+    function resetBall() {
+      ball.x = canvas.width / 2;
+      ball.y = canvas.height / 2;
+      ball.velocityX = -ball.velocityX;
+    }
+
+    // Detect collision
+    function collision(b, p) {
+      return (
+        b.x - b.radius < p.x + p.width &&
+        b.x + b.radius > p.x &&
+        b.y - b.radius < p.y + p.height &&
+        b.y + b.radius > p.y
+      );
+    }
+
+    // Update game logic
+    function update() {
+      // Move the ball
+      ball.x += ball.velocityX;
+      ball.y += ball.velocityY;
+
+      // AI movement (basic)
+      computer.y += (ball.y - (computer.y + computer.height / 2)) * 0.1;
+
+      // Ball collision with top and bottom walls
+      if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+        ball.velocityY = -ball.velocityY;
+      }
+
+      // Check collision with paddles
+      let player = (ball.x < canvas.width / 2) ? user : computer;
+      if (collision(ball, player)) {
+        ball.velocityX = -ball.velocityX;
+      }
+
+      // Score update
+      if (ball.x - ball.radius < 0) {
+        computer.score++;
+        resetBall();
+      } else if (ball.x + ball.radius > canvas.width) {
+        user.score++;
+        resetBall();
+      }
+    }
+
+    // Render game elements
+    function render() {
+      // Clear canvas
+      drawRect(0, 0, canvas.width, canvas.height, "#000");
+
+      // Draw paddles and ball
+      drawRect(user.x, user.y, user.width, user.height, user.color);
+      drawRect(computer.x, computer.y, computer.width, computer.height, computer.color);
+      drawBall(ball.x, ball.y, ball.radius, ball.color);
+    }
+
+    // Game loop
+    function gameLoop() {
+      update();
+      render();
+    }
+
+    // Run the game loop 60 times per second
+    const framePerSecond = 60;
+    setInterval(gameLoop, 1000 / framePerSecond);
+  </script>
+</body>
+</html>
